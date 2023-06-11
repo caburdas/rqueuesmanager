@@ -1,17 +1,11 @@
-#![allow(unused)]
 mod actions;
+mod cli;
 
-use actions::Cli;
 use clap::Parser;
+use cli::Cli;
 
 fn main() {
     let mut cli = Cli::parse();
-
-    if cli.run == Some(true) {
-        println!("Running {:?}", cli.run);
-        run(cli);
-        return;
-    }
 
     enter_parameters(&mut cli);
     loop {
@@ -33,24 +27,20 @@ fn main() {
                 Ok(_) => {}
                 Err(e) => print!("{}", e),
             },
+            5 => match actions::get_messages(&cli) {
+                Ok(_) => {}
+                Err(e) => print!("{}", e),
+            },
             _ => {}
         }
     }
 }
 
-fn run(cli: Cli) {
-    if cli.host.is_none() || cli.port.is_none() || cli.user.is_none() || cli.password.is_none() {
-        panic!("Bad parameters {:?}", cli);
-    }
-    //delete all queues
-    //delete all exchnanges
-}
-
 fn enter_parameters(cli: &mut Cli) {
-    let mut line = "".to_string();
+    let mut line = String::new();
     while cli.host.is_none() {
         println!("Enter hostname : ");
-        line = String::new();
+        line = "".to_string();
         match std::io::stdin().read_line(&mut line) {
             Ok(_) => {
                 if line.starts_with('\n') {
@@ -65,7 +55,7 @@ fn enter_parameters(cli: &mut Cli) {
     line = "".to_string();
     loop {
         println!("Enter port (15672): ");
-        line = String::new();
+        line = "".to_string();
         match std::io::stdin().read_line(&mut line) {
             Ok(_) => {
                 if line.starts_with('\n') {
@@ -87,7 +77,7 @@ fn enter_parameters(cli: &mut Cli) {
     line = "".to_string();
     while cli.user.is_none() {
         println!("Enter user : ");
-        line = String::new();
+        line = "".to_string();
         match std::io::stdin().read_line(&mut line) {
             Ok(_) => {
                 if line.starts_with('\n') {
@@ -102,7 +92,7 @@ fn enter_parameters(cli: &mut Cli) {
     line = "".to_string();
     while cli.password.is_none() {
         println!("Enter password : ");
-        line = String::new();
+        line = "".to_string();
         match std::io::stdin().read_line(&mut line) {
             Ok(_) => {
                 if line.starts_with('\n') {
